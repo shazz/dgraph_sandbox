@@ -18,6 +18,7 @@ def set_schema(client):
         name
         model_type
         monitors_equipment: [Load]
+        equipment_type: [EquipmentType]
     }    
     type Load {
         name
