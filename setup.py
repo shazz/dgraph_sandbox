@@ -86,16 +86,16 @@ def create_data(client):
 # Query for data.
 def query_equipments(client):
     # Run query.
-    query_ok = """{
-        equipments(func: type(Equipment)) {
+    query = """{
+        equipments(func: type(Equipment)) @filter (has(equipment_type) AND has(monitors_equipment) )  {
             name
             model_type
             count(equipment_type)
-            equipment_type @filter (has(equipment_type)) {
+            equipment_type {
                 name
             }
             count(monitors_equipment)
-            monitors_equipment @filter (eq(count(monitors_equipment), 0) AND (eq(load_type, "light")) ) {
+            monitors_equipment @filter (eq(load_type, "light") ) {
               uid
               name
               load_type
@@ -103,24 +103,7 @@ def query_equipments(client):
         }
     }"""
 
-    query_nok = """{
-        equipments(func: type(Equipment)) {
-            name
-            model_type
-            count(equipment_type)
-            equipment_type @filter (has(equipment_type)) {
-                name
-            }            
-            count(monitors_equipment)
-            monitors_equipment @filter ( has(monitors_equipment) AND (eq(load_type, "light")) ) {
-              uid
-              name
-              load_type
-            }        
-        }
-    }"""
-
-    res = client.txn(read_only=True).query(query_ok)
+    res = client.txn(read_only=True).query(query)
     equipments = json.loads(res.json)
 
     # Print results.
